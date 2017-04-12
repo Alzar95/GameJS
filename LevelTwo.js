@@ -1,10 +1,6 @@
 LevelTwo.newLoopFromConstructor('LevelTwo', function () {
-
-
     var width = LevelTwo.getWH().w;
     var height = LevelTwo.getWH().h;
-
-
 
     var map = {
         width: 50,
@@ -47,17 +43,14 @@ LevelTwo.newLoopFromConstructor('LevelTwo', function () {
     var positionCow = false;
     var positionHare = false;
     var positionLamb = false;
+    var flag;
 
     var object = [];
-    var walls = [];
     var gold = [];
     var waters = [];
 
-
     OOP.forArr(map.source, function (string, Y) {
         OOP.forArr(string, function (symbol, X) {
-
-
             if (!symbol || symbol == '') {
                 return;
             }
@@ -90,24 +83,12 @@ LevelTwo.newLoopFromConstructor('LevelTwo', function () {
                 }));
             }
 
-
             if (symbol == 'W') {
                 waters.push(LevelTwo.newRectObject({
                     w : map.width, h : map.height,
                     x : map.width*X, y : map.height*Y,
                     fillColor : '#084379',
                     alpha : 0.5
-                }));
-            }
-
-            if (symbol == 'Q') {
-                walls.push(LevelTwo.newImageObject({
-                    w: map.width, h: map.height,
-                    x: map.width * X, y: map.height * Y,
-                    file: "Image/004.png",
-                    userData: {
-                        hp: 5
-                    }
                 }));
             }
 
@@ -121,7 +102,6 @@ LevelTwo.newLoopFromConstructor('LevelTwo', function () {
                     }
                 }));
             }
-
         });
     });
 
@@ -156,8 +136,6 @@ LevelTwo.newLoopFromConstructor('LevelTwo', function () {
         animation: pjs.tiles.newAnimation('Image/Hero/HeroStandL.png', 120, 112, 7),
         visible: false
     });
-
-
 
     var group = LevelTwo.newMesh({
         add: [hero, hero2, hero3, hero4]
@@ -297,23 +275,8 @@ LevelTwo.newLoopFromConstructor('LevelTwo', function () {
         }));
     }
 
-
-    var bullet = LevelTwo.newCircleObject({
-        x:0 , y:0,
-        radius: 5,
-        fillColor: "#ff8000",
-        userData: {
-            life: false,
-            speed: 0
-        }
-    });
-
-
-
-
     hero2.gr = 0.5;
     hero2.speed = point(0, 0);
-    var flag;
 
     chicken[0].speed = point(0, 0);
     chicken2[0].speed = point(0, 0);
@@ -336,7 +299,6 @@ LevelTwo.newLoopFromConstructor('LevelTwo', function () {
             backgroundSize: 'cover'
         });
         group.draw();
-
 
         for(i in chicken) {
             if(!chicken[i].isInCameraStatic()) continue;
@@ -388,11 +350,7 @@ LevelTwo.newLoopFromConstructor('LevelTwo', function () {
             lamb2[lambNumber2].draw();
         }
 
-
         hero2.speed.y += hero2.gr;
-
-
-
 
         if(key.isDown('RIGHT')) {
             hero2.speed.x = 4;
@@ -425,26 +383,6 @@ LevelTwo.newLoopFromConstructor('LevelTwo', function () {
             hero.setVisible(true);
         }
 
-
-
-
-
-
-
-        if(key.isDown('E') && !bullet.life) {
-            bullet.setPosition(hero2.getPosition(2));
-            bullet.life = true;
-            bullet.setAngle(hero2.getAngle());
-        }
-
-        if(bullet.life) {
-            bullet.moveAngle(5);
-            bullet.draw();
-            if(!bullet.isInCameraStatic()) {
-                bullet.life = false;
-            }
-        }
-
         if(hero2.hp < 1) {
             brush.drawTextS({
                 text : "Game over",
@@ -457,6 +395,21 @@ LevelTwo.newLoopFromConstructor('LevelTwo', function () {
             });
 
             LevelTwo.setLoop('pause');
+            pjs.camera.setPosition(point(0, 0));
+        }
+
+        if(score === 18) {
+            brush.drawTextS({
+                text : "Victory",
+                size : 100,
+                color : '#13ed00',
+                strokeColor : '#002C5D',
+                strokeWidth : 1,
+                x : (width/2) - 250, y : (height/2) - 50,
+                style : 'bold'
+            });
+
+            game.setLoop('pause');
             pjs.camera.setPosition(point(0, 0));
         }
 
@@ -615,7 +568,6 @@ LevelTwo.newLoopFromConstructor('LevelTwo', function () {
             }
         }
 
-
         if(lamb[0].x === positionLamb.x  && lamb[0].life && lamb2[0].life) {
             lamb[0].speed.x = 2;
             lamb2[0].speed.x = 2;
@@ -632,7 +584,6 @@ LevelTwo.newLoopFromConstructor('LevelTwo', function () {
             lamb[0].setVisible(false);
             lamb2[0].setVisible(false);
         }
-
 
         var lambC;
         for(lambC in lamb) {
@@ -689,68 +640,7 @@ LevelTwo.newLoopFromConstructor('LevelTwo', function () {
                             hero2.x = el.w + el.x;
                             hero2.speed.x = 0;
                         }
-
-
                     }
-                }
-            }
-        });
-
-
-        OOP.drawArr(walls, function (el) {
-            if(el.isInCameraStatic()) {
-                if(el.isStaticIntersect(hero)) {
-
-                    if(hero2.x + hero2.w > el.x + el.w / 4 && hero2.x < el.x + el.w - el.w / 4) {
-                        if (hero2.speed.y > 0 && hero2.y + hero2.h < el.y + el.h / 2) {
-                            if (key.isDown('UP')) {
-                                hero2.speed.y = -10;
-                            } else {
-                                hero2.y = el.y - hero2.h;
-                                hero2.speed.y *= -0.3;
-                                if(hero2.speed.y > -0.3) {
-                                    hero2.speed.y = 0;
-                                }
-                            }
-                        } else if (hero2.speed.y < 0 && hero2.y > el.y + el.h / 2) {
-                            hero2.y = el.y + el.h;
-                            hero2.speed.y *= -0.1;
-                        } else if (hero2.speed.y > 0 && hero2.y < el.y + el.h / 2) {
-                            hero2.y = el.y - hero2.h;
-                            hero2.speed.y = 0;
-                        }
-                    }
-
-                    if(hero2.y + hero2.h > el.y + el.h / 4 && hero2.y < el.y + el.h - el.h / 4) {
-                        if (hero2.speed.x > 0 && hero2.x + hero2.w < el.x + el.w / 2) {
-                            hero2.x = el.x - hero2.w;
-                            hero2.speed.x = 0;
-                        }
-
-                        if (hero2.speed.x < 0 && hero2.x > el.x + el.w / 2) {
-                            hero2.x = el.w + el.x;
-                            hero2.speed.x = 0;
-                        }
-
-
-                    }
-                }
-            }
-
-            var i;
-            for(i in walls) {
-                if(!walls[i]) {
-                    continue;
-                }
-                if(!walls[i].isInCamera()) {
-                    continue;
-                }
-                if(walls[i].hp < 1) {
-                    walls.splice(i, 1);
-                }
-                if(bullet.life && walls[i].isStaticIntersect(bullet.getStaticBox())) {
-                    bullet.life = false;
-                    walls[i].hp -= 1;
                 }
             }
         });
@@ -782,10 +672,6 @@ LevelTwo.newLoopFromConstructor('LevelTwo', function () {
             }
         });
 
-
-
-
-
         if(hero2.speed.y) {
             hero2.y += hero2.speed.y;
             hero.y += hero2.speed.y;
@@ -813,7 +699,6 @@ LevelTwo.newLoopFromConstructor('LevelTwo', function () {
             if (pig[pigI].speed.x) {
                 pig[pigI].x += pig[pigI].speed.x;
             }
-
 
             if (pig2[pigI].speed.x) {
                 pig2[pigI].x += pig2[pigI].speed.x;
@@ -844,8 +729,6 @@ LevelTwo.newLoopFromConstructor('LevelTwo', function () {
         if(lamb2[0].speed.x) {
             lamb2[0].x += lamb2[0].speed.x;
         }
-
-
 
         brush.drawTextS({
             text : 'Score: '+ score,

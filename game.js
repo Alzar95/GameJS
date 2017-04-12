@@ -1,10 +1,6 @@
 game.newLoopFromConstructor('game', function () {
-
     var width = game.getWH().w;
     var height = game.getWH().h;
-
-
-
 
     var map = {
         width: 50,
@@ -43,24 +39,20 @@ game.newLoopFromConstructor('game', function () {
         ]
     };
 
-
-
     var positionChicken = false;
     var positionPig = false;
     var positionCow = false;
     var positionHare = false;
     var positionLamb = false;
+    var flag;
 
     var object = [];
-    var walls = [];
     var gold = [];
     var waters = [];
 
 
         OOP.forArr(map.source, function (string, Y) {
             OOP.forArr(string, function (symbol, X) {
-
-
                 if (!symbol || symbol == '') {
                     return;
                 }
@@ -110,17 +102,6 @@ game.newLoopFromConstructor('game', function () {
                     }));
                 }
 
-                if (symbol == 'Q') {
-                    walls.push(game.newImageObject({
-                        w: map.width, h: map.height,
-                        x: map.width * X, y: map.height * Y,
-                        file: "Image/004.png",
-                        userData: {
-                            hp: 5
-                        }
-                    }));
-                }
-
                 if (symbol == '|') {
                     gold.push(game.newAnimationObject({
                         w: map.width, h: map.height,
@@ -131,7 +112,6 @@ game.newLoopFromConstructor('game', function () {
                         }
                     }));
                 }
-
             });
         });
 
@@ -167,8 +147,6 @@ game.newLoopFromConstructor('game', function () {
         visible: false
     });
 
-
-
     var group = game.newMesh({
         add: [hero, hero2, hero3, hero4]
     });
@@ -199,7 +177,6 @@ game.newLoopFromConstructor('game', function () {
         }));
     }
 
-
     var chicken = [];
     for(var i = 0; i < 1; i++) {
         chicken.push(game.newAnimationObject({
@@ -225,7 +202,6 @@ game.newLoopFromConstructor('game', function () {
             position : positionChicken ? positionChicken : point(0, 0)
         }));
     }
-
 
     var cow = [];
     for(var cowNumber = 0; cowNumber < 1; cowNumber++) {
@@ -253,7 +229,6 @@ game.newLoopFromConstructor('game', function () {
         }));
     }
 
-
     var hare = [];
     for(var hareNumber = 0; hareNumber < 1; hareNumber++) {
         hare.push(game.newAnimationObject({
@@ -279,7 +254,6 @@ game.newLoopFromConstructor('game', function () {
             position : positionHare ? positionHare : point(0, 0)
         }));
     }
-
 
     var lamb = [];
     for(var lambNumber = 0; lambNumber < 1; lambNumber++) {
@@ -307,23 +281,8 @@ game.newLoopFromConstructor('game', function () {
         }));
     }
 
-
-    var bullet = game.newCircleObject({
-        x:0 , y:0,
-        radius: 5,
-        fillColor: "#ff8000",
-        userData: {
-            life: false,
-            speed: 0
-        }
-    });
-
-
-
-
     hero2.gr = 0.5;
     hero2.speed = point(0, 0);
-    var flag;
 
     chicken[0].speed = point(0, 0);
     chicken2[0].speed = point(0, 0);
@@ -394,11 +353,7 @@ game.newLoopFromConstructor('game', function () {
             lamb2[lambNumber2].draw();
         }
 
-
         hero2.speed.y += hero2.gr;
-
-
-
 
         if(key.isDown('RIGHT')) {
             hero2.speed.x = 4;
@@ -431,26 +386,26 @@ game.newLoopFromConstructor('game', function () {
             hero.setVisible(true);
         }
 
-
-        if(key.isDown('E') && !bullet.life) {
-            bullet.setPosition(hero2.getPosition(2));
-            bullet.life = true;
-            bullet.setAngle(hero2.getAngle());
-        }
-
-        if(bullet.life) {
-            bullet.moveAngle(5);
-            bullet.draw();
-            if(!bullet.isInCameraStatic()) {
-                bullet.life = false;
-            }
-        }
-
         if(hero2.hp < 1) {
             brush.drawTextS({
                 text : "Game over",
                 size : 100,
                 color : '#ed2313',
+                strokeColor : '#002C5D',
+                strokeWidth : 1,
+                x : (width/2) - 250, y : (height/2) - 50,
+                style : 'bold'
+            });
+
+            game.setLoop('pause');
+            pjs.camera.setPosition(point(0, 0));
+        }
+
+        if(score === 26) {
+            brush.drawTextS({
+                text : "Victory",
+                size : 100,
+                color : '#13ed00',
                 strokeColor : '#002C5D',
                 strokeWidth : 1,
                 x : (width/2) - 250, y : (height/2) - 50,
@@ -690,68 +645,7 @@ game.newLoopFromConstructor('game', function () {
                             hero2.x = el.w + el.x;
                             hero2.speed.x = 0;
                         }
-
-
                     }
-                }
-            }
-        });
-
-
-        OOP.drawArr(walls, function (el) {
-            if(el.isInCameraStatic()) {
-                if(el.isStaticIntersect(hero)) {
-
-                    if(hero2.x + hero2.w > el.x + el.w / 4 && hero2.x < el.x + el.w - el.w / 4) {
-                        if (hero2.speed.y > 0 && hero2.y + hero2.h < el.y + el.h / 2) {
-                            if (key.isDown('UP')) {
-                                hero2.speed.y = -10;
-                            } else {
-                                hero2.y = el.y - hero2.h;
-                                hero2.speed.y *= -0.3;
-                                if(hero2.speed.y > -0.3) {
-                                    hero2.speed.y = 0;
-                                }
-                            }
-                        } else if (hero2.speed.y < 0 && hero2.y > el.y + el.h / 2) {
-                            hero2.y = el.y + el.h;
-                            hero2.speed.y *= -0.1;
-                        } else if (hero2.speed.y > 0 && hero2.y < el.y + el.h / 2) {
-                            hero2.y = el.y - hero2.h;
-                            hero2.speed.y = 0;
-                        }
-                    }
-
-                    if(hero2.y + hero2.h > el.y + el.h / 4 && hero2.y < el.y + el.h - el.h / 4) {
-                        if (hero2.speed.x > 0 && hero2.x + hero2.w < el.x + el.w / 2) {
-                            hero2.x = el.x - hero2.w;
-                            hero2.speed.x = 0;
-                        }
-
-                        if (hero2.speed.x < 0 && hero2.x > el.x + el.w / 2) {
-                            hero2.x = el.w + el.x;
-                            hero2.speed.x = 0;
-                        }
-
-
-                    }
-                }
-            }
-
-            var i;
-            for(i in walls) {
-                if(!walls[i]) {
-                    continue;
-                }
-                if(!walls[i].isInCamera()) {
-                    continue;
-                }
-                if(walls[i].hp < 1) {
-                    walls.splice(i, 1);
-                }
-                if(bullet.life && walls[i].isStaticIntersect(bullet.getStaticBox())) {
-                    bullet.life = false;
-                    walls[i].hp -= 1;
                 }
             }
         });
@@ -767,8 +661,6 @@ game.newLoopFromConstructor('game', function () {
             }
         });
 
-
-
         OOP.drawArr(gold, function (el) {
             if(el.isInCameraStatic()) {
                 if(el.active) {
@@ -782,10 +674,6 @@ game.newLoopFromConstructor('game', function () {
                 }
             }
         });
-
-
-
-
 
         if(hero2.speed.y) {
             hero2.y += hero2.speed.y;
@@ -809,7 +697,6 @@ game.newLoopFromConstructor('game', function () {
             chicken2[0].x += chicken2[0].speed.x;
         }
 
-
         for(var pigI = 0; pigI < 1; pigI++) {
             if (pig[pigI].speed.x) {
                 pig[pigI].x += pig[pigI].speed.x;
@@ -824,7 +711,6 @@ game.newLoopFromConstructor('game', function () {
             if (cow[0].speed.x) {
                 cow[0].x += cow[0].speed.x;
             }
-
 
         if(cow2[0].speed.x) {
             cow2[0].x += cow2[0].speed.x;
@@ -845,8 +731,6 @@ game.newLoopFromConstructor('game', function () {
         if(lamb2[0].speed.x) {
             lamb2[0].x += lamb2[0].speed.x;
         }
-
-
 
         brush.drawTextS({
             text : 'Score: '+ score,

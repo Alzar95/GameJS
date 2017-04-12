@@ -17,11 +17,11 @@ var Menu = function (pjs, obj) {
     var items = [];
 
     var clr = {
-        itemFill : '#0bf95d',
+        itemFill : '#32e5f9',
         itemHover : '#e3dc4a',
         itemColor : 'white',
         itemColorHover : '#323232',
-        background : '#720b0f',
+        background : '#060202',
         color : 'white'
     };
 
@@ -105,8 +105,6 @@ var Menu = function (pjs, obj) {
 
     };
 
-
-
     this.entry = function () {
 
     };
@@ -118,7 +116,7 @@ var Menu = function (pjs, obj) {
 };
 
 game.newLoopFromClassObject('menu', new Menu(pjs, {
-    name  : 'Cat',
+    name  : 'Remalswor',
     radius : 15,
     items : {
         game  : 'Forest',
